@@ -1,40 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLazyQuery, useQuery, useApolloClient } from '@apollo/client';
 import gql from 'graphql-tag';
-
-const GET_REQUESTS = gql`
-  query requests($first: Int, $filter: RequestsFilterInput) {
-    requests(first: $first, filter: $filter) {
-      totalCount
-      edges {
-        node {
-          id
-          type
-          status
-        }
-      }
-    }
-  }
-`;
 
 const Query = () => {
   const { handleSubmit, register } = useForm();
-  const [getQuery, { called, loading, data }] = useLazyQuery();
+  const [response, setResponse] = useState('');
   const client = useApolloClient();
 
-  if (called && loading) return <p>Loading ...</p>;
-
   const onSubmit = async (data) => {
-    // query site dev here
-    // await getQuery({
-    //   context: {
-    //     query: GET_REQUESTS,
-    //   },
-    //   variables: data.variables,
-    // });
-
-    console.log(JSON.parse(data.variables));
     const result = await client.query({
       query: gql`
         ${data.query}
@@ -42,6 +15,7 @@ const Query = () => {
       variables: JSON.parse(data.variables),
     });
     console.log('result here', result);
+    setResponse(JSON.stringify(result, undefined, 1));
   };
   return (
     <div>
@@ -52,7 +26,7 @@ const Query = () => {
         <br />
         <input type="submit" value="Submit Query" />
       </form>
-      {data && <code>{data.requests.totalCount}</code>}
+      {response !== '' && <pre>{response}</pre>}
     </div>
   );
 };
