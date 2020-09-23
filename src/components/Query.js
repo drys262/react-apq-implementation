@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import gql from 'graphql-tag';
+import { useApolloClient } from '@apollo/client';
 
 const Query = () => {
   const { handleSubmit, register } = useForm();
